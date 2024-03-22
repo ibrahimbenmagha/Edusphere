@@ -1,0 +1,49 @@
+.App {
+  height: 100vh;
+}
+
+.allpage{
+  height: 100%;
+}
+
+.Header{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.Menu-sider{
+  height: '100%';
+  border-Right: 0;
+  height: 100vh;
+  background-color: #073866;
+}
+
+.navbar{
+  display: flex;
+  align-items: center;
+  height: 130px;
+  width: 100%;
+  background-color: #073866;
+  border: 43px;
+}
+
+.logo{
+  width: 33%;
+  display: flex;
+ }
+
+ .content-login-form{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+ }
+ 
+ .Login_form{
+  justify-content: center;
+  align-items: center;
+ }
+
