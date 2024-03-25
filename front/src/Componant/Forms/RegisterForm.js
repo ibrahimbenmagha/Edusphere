@@ -20,10 +20,11 @@ const RegisterForm = () => {
   
 
   return (
-    <div className='RegisterForm'>
-      {/* <span  className='h1'>
+      <div>
         <h1>Create new School</h1>
-      </span> */}
+        
+    <div className='RegisterForm'>
+
       
     <Form className='form'
       {...formItemLayout}
@@ -173,7 +174,7 @@ const RegisterForm = () => {
         </Button>
       </Form.Item>
     </Form>
-    
+    </div>
     </div>
   );
 };
