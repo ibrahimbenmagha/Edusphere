@@ -1,70 +1,55 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Space, Table, Tag } from 'antd';
+import axios from 'axios';
+
 const { Column, ColumnGroup } = Table;
-const data = [
-  {
-    key: '1',
-    firstName: 'John',
-    lastName: 'Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    firstName: 'Jim',
-    lastName: 'Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    firstName: 'Joe',
-    lastName: 'Black',
-    age: 32,
-    address: 'Sydney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
-const App = () => (
-  <Table dataSource={data}>
-    <ColumnGroup title="Name">
-      <Column title="First Name" dataIndex="firstName" key="firstName" />
-      <Column title="Last Name" dataIndex="lastName" key="lastName" />
-    </ColumnGroup>
-    <Column title="Age" dataIndex="age" key="age" />
-    <Column title="Address" dataIndex="address" key="address" />
-    <Column
-      title="Tags"
-      dataIndex="tags"
-      key="tags"
-      render={(tags) => (
-        <>
-          {tags.map((tag) => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            if (tag === 'loser') {
-              color = 'volcano';
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            );
-          })}
-        </>
-      )}
-    />
-    <Column
-      title="Action"
-      key="action"
-      render={(_, record) => (
-        <Space size="middle">
-          <a>Invite {record.lastName}</a>
-          <a>Delete</a>
-        </Space>
-      )}
-    />
-  </Table>
-);
+
+const App = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    // Fetch data from the API endpoint
+    axios.get('http://127.0.0.1:8000/api/getAllUnconfirmedSchools')
+      .then(response => {
+        setData(response.data);
+      })
+      .catch(error => {console.error('Error fetching data:', error);}
+      );}, []);
+
+  return (
+    <Table dataSource={data}>
+       {/* <Column
+        title="Logo"
+        dataIndex="logo"
+        key="logo"
+        render={(logo) => (
+          <img src={logo} alt="Logo" style={{ width: 50, height: 50 }} />
+        )}
+      /> */}
+      <ColumnGroup title="Name">
+        <Column title="School Name" dataIndex="name" key="name" />
+      </ColumnGroup>
+      
+      <Column title="id" dataIndex="id" key="id " hidden/>
+      <Column title="Email" dataIndex="email" key="email"/>
+      <Column title="Phone Number" dataIndex="phone" key="phone"/>
+      <Column title="Type" dataIndex="type" key="type"/>
+      <Column title="City" dataIndex="city" key="cities"/>
+      <Column title="Secteur" dataIndex="sector" key="secteur"/>
+      <Column title="School Principal" dataIndex="School-Principal" key="School_Principal" />
+      <Column title="School Supervisor" dataIndex="School-Supervisor" key="School_Supervisor" />
+      <Column
+        title="Action"
+        key="action"
+        render={(record) => (
+          <Space size="middle">
+            <a>Confirm {record.name}</a>
+            <a>Delete</a>
+          </Space>
+        )}
+      />
+    </Table>
+  );
+};
+
 export default App;

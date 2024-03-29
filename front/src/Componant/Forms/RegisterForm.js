@@ -1,62 +1,94 @@
-import React, { useState } from 'react';
-import {Button,Cascader,Form,Input,Upload,Select,} from 'antd';
-import {UploadOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Button, Cascader, Form, Input, Upload, Select } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import "./RegisterForm.css";
 
 const { Option } = Select;
-const residences = 
-[
-  {value: 'zhejiang',label: 'Zhejiang',children: [{value: 'hangzhou',label: 'Hangzhou'},],},
-  {value: 'jiangsu',label: 'Jiangsu',children: [{value: 'nanjing',label: 'Nanjing'},],},
-];
-const formItemLayout = {labelCol: {xs: {span: 24,},sm: {span: 8,},},wrapperCol: {xs: {span: 24,},sm: {span: 16,},},};
-const tailFormItemLayout = {wrapperCol: {xs: {span: 24,offset: 0,},sm: {span: 16,offset: 8,},},};
+const formItemLayout = {
+  labelCol: { xs: { span: 24 }, sm: { span: 8 } },
+  wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
+};
+const tailFormItemLayout = {
+  wrapperCol: { xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } },
+};
 const RegisterForm = () => {
   const [form] = Form.useForm();
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+  const [residences, setResidences] = useState([]);
+  const [selectedResidence, setSelectedResidence] = useState(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+
+  
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/getAllCitiesWithSectors');
+      const data = response.data;
+      const formattedData = data.map(city => ({
+        value: city.name,
+        label: city.name,
+        children: city.sectors.map(sector => ({ value: sector.name, label: sector.name }))
+      }));
+      setResidences(formattedData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
-  
-  
+
+  const handleResidenceChange = (value, selectedOptions) => {
+    setSelectedResidence(selectedOptions);
+  };
+
+  const onFinish = async (values) => {
+    const { residence, ...otherValues } = values;
+    const [city, sector] = residence;
+
+    const payload = {
+      ...otherValues,
+      city,
+      sector
+    };
+
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/CreateSchool', payload);
+      console.log('School created successfully:', response.data);
+      form.resetFields();
+    } catch (error) {
+      console.error('Error creating school:', error);
+    }
+  };
 
   return (
-      <div>
-        <h1>Create new School</h1>
-        
-    <div className='RegisterForm'>
+    <div>
+      <h1>Create new School</h1>
+      <div className='RegisterForm'>
+        <Form
+          className='form'
+          {...formItemLayout}
+          form={form}
+          name="register"
+          onFinish={onFinish}
+          initialValues={{
+            residence: ['city', 'sector'],
+            prefix: '212',
+          }}
+          style={{ maxWidth: 600 }}
+          scrollToFirstError
+        >
+          <Form.Item
+            className='formItem'
+            name="name"
+            label="School Name"
+            tooltip="What's your school name?"
+            rules={[{ required: true, message: 'Please input the school name!', whitespace: true }]}
+          >
+            <Input className='label' />
+          </Form.Item>
 
-      
-    <Form className='form'
-      {...formItemLayout}
-      form={form}
-      name="register"
-      onFinish={onFinish}
-      initialValues={{
-        residence: ['zhejiang', 'hangzhou'],
-        prefix: '212',
-      }}
-      style={{
-        maxWidth: 600,
-      }}
-      scrollToFirstError
-    >
-
-        <Form.Item className='formItem'
-        name="SchoolName"
-        label="School Name"
-        tooltip="What's your school name?"
-        rules={[
-          {
-            required: true,
-            message: 'Please input the school name!',
-            whitespace: true,
-          },
-        ]}
-      >
-        <Input className='label'/>
-      </Form.Item>
-
-      <Form.Item className='formItem'
+          <Form.Item className='formItem'
         name="email"
         label="E-mail"
         tooltip="What is the profetional email of tthis school?"
@@ -88,7 +120,7 @@ const RegisterForm = () => {
       </Form.Item>
 
       <Form.Item className='formItem'
-        name="SchoolType"
+        name="type"
         label="School type"
         rules={[
           {
@@ -98,47 +130,35 @@ const RegisterForm = () => {
         ]}
       >
         <Select className='label' placeholder="Select the school type">
-          <Option value="Primere">Primary School</Option>
+          <Option value="Primary">Primary School</Option>
           <Option value="Secondry">Secondry School</Option>
-          <Option value="Height">Height School</Option>
+          <Option value="Height">Height School</Option> 
           <Option value="Primary-Secondry">Primary-Secondry</Option>
           <Option value="Primary-Secondry-Height">Primary-Secondry-Height</Option>
 
         </Select>
       </Form.Item>
+          <Form.Item
+            className='formItem'
+            name="residence"
+            label="City/Sector"
+            rules={[{ type: 'array', required: true, message: 'Please select your habitual residence!' }]}
+          >
+            <Cascader className='label' options={residences} onChange={handleResidenceChange} />
+          </Form.Item>
+
+          <div className='selectedResidence'>
+            {selectedResidence && (
+              <span>
+                Selected Residence: {selectedResidence.map(option => option.label).join(' / ')}
+              </span>
+            )}
+          </div>
 
 
-      <Form.Item className='formItem'
-        name="residence"
-        label="City/Sector"
-        rules={[
-          {
-            type: 'array',
-            required: true,
-            message: 'Please select your habitual residence!',
-          },
-        ]}
-      >
-        <Cascader className='label' options={residences} />
-      </Form.Item>
-    
-      <Form.Item className='formItem'
-        name="logo"
-        label="Upload the logo"
-        rules={[
-          {
-            required: true,
-            message: 'Please upload the logo!',
-          },
-        ]}
-      >
-          <Upload className='label' name="logo" action="/upload.do" listType="picture">
-            <Button icon={<UploadOutlined/>}>Click to upload</Button>
-          </Upload>
-      </Form.Item>
-
-      <Form.Item className='formItem'
-        name="schoolPrincipal"
+          
+<Form.Item className='formItem'
+        name="School-Principal"
         label="Principal Name"
         tooltip="What is the school principal name?"
         rules={[
@@ -153,7 +173,7 @@ const RegisterForm = () => {
       </Form.Item>
 
       <Form.Item className='formItem'
-        name="Supervisor"
+        name="School-Supervisor"
         label="Supervisor Name"
         tooltip="What is the sSupervisor name?"
         rules={[
@@ -167,15 +187,15 @@ const RegisterForm = () => {
         <Input className='label'/>
       </Form.Item>
 
-   
-      <Form.Item className='formItem' {...tailFormItemLayout}>
-        <Button type="primary" htmlType="submit">
-          Create
-        </Button>
-      </Form.Item>
-    </Form>
-    </div>
+          <Form.Item className='formItem' {...tailFormItemLayout}>
+            <Button type="primary" htmlType="submit">
+              Create
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   );
 };
+
 export default RegisterForm;
