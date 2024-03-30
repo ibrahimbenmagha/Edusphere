@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import MyLogo from "./Photos/LogoPrincip/logo2.png";
 import RegisterForm from './Componant/Forms/RegisterForm';
 import PendingSchools from './Componant/PendingSchool/PendingSchools';
+import ConfirmedSchool from './Componant/ConfirmedSchool/ConfirmedSchool';
 
 import { MenuFoldOutlined, MenuUnfoldOutlined, LoadingOutlined, AppstoreAddOutlined, CheckOutlined, LogoutOutlined } from '@ant-design/icons';
 
@@ -68,6 +69,8 @@ export default function HomePageAdmin1() {
               <Routes>
                 <Route path='/Admin/CreateSchool' element={<RegisterForm />} />
                 <Route path='/Admin/PendingSchools' element={<PendingSchools />} />
+                <Route path='/Admin/ConfirmedSchools' element={<ConfirmedSchool/>} />
+
 
               </Routes>
             </div>

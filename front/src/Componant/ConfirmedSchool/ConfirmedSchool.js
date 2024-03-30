@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Space, Table, Modal, message, Button } from 'antd';
 import axios from 'axios';
+
 const { Column, ColumnGroup } = Table;
 const { confirm } = Modal;
 
-const App = () => {
+const ConfirmedSchool = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -13,7 +14,7 @@ const App = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/getAllUnconfirmedSchools');
+      const response = await axios.get('http://127.0.0.1:8000/api/getAllConfirmedSchools');
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -39,26 +40,6 @@ const App = () => {
       },
     });
   };
-  const handleConfirm = (record) => {
-    confirm({
-      title: 'Are you sure you want to confirm this school?',
-      content: 'This action cannot be undone.',
-      onOk: async () => {
-        try {
-          await axios.put(`http://127.0.0.1:8000/api/confirmschool/${record.id}`);
-          message.success('School confirmed successfully');
-          fetchData(); 
-        } catch (error) {
-          console.error('Error confirming school:', error);
-          message.error('Failed to confirm school');
-        }
-      },
-      onCancel() {
-        console.log('Cancel');
-      },
-    });
-  };
-
 
 
   return (
@@ -77,14 +58,12 @@ const App = () => {
         <Column title="School Principal" dataIndex="School-Principal" key="School-Principal" />
         <Column title="School Supervisor" dataIndex="School-Supervisor" key="School-Supervisor" />
         <Column title="id" dataIndex="id" key="id" hidden/>
-        {/* Action column for confirming and deleting */}
-        <Column
+\        <Column
           title="Action"
           key="action"
           render={(record) => (
             <Space size="middle">
               <a onClick={() => handleDelete(record)}>Delete</a>
-              <Button type="primary" onClick={() => handleConfirm(record)}>Confirm</Button>
             </Space>
           )}
         />
@@ -93,4 +72,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default ConfirmedSchool;

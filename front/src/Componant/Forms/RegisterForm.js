@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Cascader, Form, Input, Upload, Select } from 'antd';
+import { Button, Cascader, Form, Input, Upload, Select, Modal, message } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import "./RegisterForm.css";
+const { confirm } = Modal;
 
 const { Option } = Select;
 const formItemLayout = {
@@ -42,23 +43,35 @@ const RegisterForm = () => {
     setSelectedResidence(selectedOptions);
   };
 
-  const onFinish = async (values) => {
+
+
+  
+   const onFinish = async (values) => {
     const { residence, ...otherValues } = values;
     const [city, sector] = residence;
-
     const payload = {
       ...otherValues,
       city,
       sector
     };
-
+    confirm({
+      title: 'Are you sure you want to Create this school?',
+      content: '',
+      onOk: async () => {
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/CreateSchool', payload);
-      console.log('School created successfully:', response.data);
+      message.success('School deleted successfully');
       form.resetFields();
     } catch (error) {
       console.error('Error creating school:', error);
+      message.error('Failed to create school');
+
     }
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
   };
 
   return (
