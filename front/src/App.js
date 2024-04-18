@@ -1,84 +1,97 @@
-import React, { useState } from 'react';
-import './App.css';
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import MyLogo from "./Photos/LogoPrincip/logo2.png";
-import RegisterForm from './Componant/Forms/RegisterForm';
-import PendingSchools from './Componant/PendingSchool/PendingSchools';
-import ConfirmedSchool from './Componant/ConfirmedSchool/ConfirmedSchool';
+import {React, useEffect, useState} from "react";
+import {BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
 
-import { MenuFoldOutlined, MenuUnfoldOutlined, LoadingOutlined, AppstoreAddOutlined, CheckOutlined, LogoutOutlined } from '@ant-design/icons';
+import {c} from "./localStorageUtils"
 
-import { Layout, Menu, Button, theme } from 'antd';
-const { Header, Sider, Content } = Layout;
+import LoginForm from "./Componant/LoginForm/LoginForm";
+import UserPages from "./Componant/UsersPages/UsersPages";
+
+import AdminHomePage from "./Componant/AdminHomePage/AdminHomePage";
+import Home from "./Componant/AdminHomePage/Home";
+
+import CreateSchoolAdmin from "./Componant/AdminHomePage/CreateSchoolAdmin/CreateSchoolAdmin";
+import ConfirmedSchoolAdmin from "./Componant/AdminHomePage/ConfirmedSchoolAdmin/ConfirmedSchoolAdmin";
+import PendingSchoolsAdmin from "./Componant/AdminHomePage/PendingSchoolsAdmin/PendingSchoolsAdmin";
+
+import UserAdminHomePage from "./Componant/UserAdminHomePage/UserAdminHomePage";
+import ConfirmedSchoolUser from "./Componant/UserAdminHomePage/ConfirmedSchoolUser/ConfirmedSchoolUser";
+import CreateSchoolUser from "./Componant/UserAdminHomePage/CreateSchoolUser/CreateSchoolUser";
+import PendingSchoolsUser from "./Componant/UserAdminHomePage/PendingSchoolsUser/PendingSchoolsUser";
 
 
-export default function HomePageAdmin1() {
-  const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+export default function App() {
+
+  const [user, setUser]=useState(null);
+  const [hastoken, setHastoken]=useState(null);
+
+  const Admin= true;
+
+
+ 
 
   return (
     <BrowserRouter>
-      <Layout className='HomePageAdmin1'>
-        <Sider trigger={null} collapsible collapsed={collapsed} className='LayoutMenu'>
-          <div className="demo-logo-vertical">
-            <Link to="/Admin/ConfirmedSchools" className="demo-logo-vertical"><img src={MyLogo} alt="ÉDUSPHERE" id='logoLarg' /></Link>
-          </div>
+      <Routes>
+      <Route path="admin/*" element={<Navigate to="/admin/login" />} />
 
-          <Menu
-            theme="dark"
-            mode="inline"
-            defaultSelectedKeys={['1']}
-          >
-            <Menu.Item key="1" icon={<CheckOutlined />} >
-              <Link to="/Admin/ConfirmedSchools" className="ConfirmedSchools">Confirmed Schools</Link>
-            </Menu.Item>
-            <Menu.Item key="2" icon={<LoadingOutlined />} >
-              <Link to="/Admin/PendingSchools">Pending Schools</Link>
-            </Menu.Item>
-            <Menu.Item key="3" icon={<AppstoreAddOutlined />} >
-              <Link to="/Admin/CreateSchool" className='CreateSchool'>Add School</Link>
-            </Menu.Item>
-            <Menu.Item key="4" icon={<LogoutOutlined />} >
-              <Link to="/Admin/Logout">Logout</Link>
-            </Menu.Item>
-          </Menu>
-
-        </Sider>
-        <Layout>
-          <Header
-            style={{
-              padding: 0,
-              background: colorBgContainer,
-            }}
-          >
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                fontSize: '16px',
-                width: 64,
-                height: 64,
-              }}
-            />
-          </Header>
-          <Content className='ContentHomePageAdmin'>
-            <div className='RegisterFormComponent'>
-              <Routes>
-                <Route path='/Admin/CreateSchool' element={<RegisterForm />} />
-                <Route path='/Admin/PendingSchools' element={<PendingSchools />} />
-                <Route path='/Admin/ConfirmedSchools' element={<ConfirmedSchool/>} />
+        <Route path="/admin/login" element={<LoginForm />} />
+        <Route path="/" element={<UserPages />} />
 
 
-              </Routes>
-            </div>
+        {Admin ? (
+          <>
+            <Route path="UserAdminHomePage/*" element={<Navigate to="/AdminHomePage" />} />
 
-          </Content>
-        </Layout>
-      </Layout>
+            <Route path="AdminHomePage" element={<AdminHomePage />}>
+                <Route path="home" element={<Home />} />
+                <Route path="CreateSchoolAdmin" element={<CreateSchoolAdmin />} />
+                <Route path="PendingSchoolsAdmin" element={<PendingSchoolsAdmin />} />
+                <Route  path="ConfirmedSchoolAdmin" element={<ConfirmedSchoolAdmin />} />
+
+            </Route>
+          </>
+        ) 
+        :
+        (
+          <>
+            <Route path="AdminHomepage/*" element={<Navigate to="/UserAdminHomePage" />} />
+
+            <Route path="UserAdminHomePage" element={<UserAdminHomePage />}>
+                <Route path="home" element={<Home />} />
+                <Route path="CreateSchoolUser" element={<CreateSchoolUser />} />
+                <Route path="PendingSchoolsUser" element={<PendingSchoolsUser />} />
+                <Route path="ConfirmedSchoolUser" element={<ConfirmedSchoolUser />}/>
+
+            </Route>
+          </>
+        )}
+
+        {/* {!isAdmin ? (
+          <>
+            <Route path="AdminHomepage/*" element={<Navigate to="/UserAdminHomePage" />} />
+
+            <Route path="UserAdminHomePage" element={<UserAdminHomePage />}>
+
+                <Route path="CreateSchoolUser" element={<CreateSchoolUser />} />
+                <Route path="PendingSchoolsUser" element={<PendingSchoolsUser />} />
+                <Route path="ConfirmedSchoolUser" element={<ConfirmedSchoolUser />}/>
+
+            </Route>
+          </>
+        ) : (
+          <>
+            <Route path="UserAdminHomePage/*" element={<Navigate to="/AdminHomePage" />} />
+
+            <Route path="AdminHomePage" element={<AdminHomePage />}>
+
+                <Route path="CreateSchoolAdmin" element={<CreateSchoolAdmin />} />
+                <Route path="PendingSchoolsAdmin" element={<PendingSchoolsAdmin />} />
+                <Route path="ConfirmedSchoolAdmin" element={<ConfirmedSchoolAdmin />} />
+
+            </Route>
+          </>
+        )} */}
+      </Routes>
     </BrowserRouter>
-   
   );
-};
+}
